@@ -1,101 +1,67 @@
-
-<!DOCTYPE html>
-<html lang="de">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>TransportOffice</title>
-<style>
-body{font-family:Arial;background:#f1f5f9;margin:0;color:#183047}
-header{background:#124b7a;color:white;padding:22px;text-align:center}
-main{max-width:700px;margin:auto;padding:18px}
-section{background:white;padding:20px;border-radius:12px;margin:15px 0}
-input,select,button{box-sizing:border-box;width:100%;padding:12px;margin:6px 0;border:1px solid #ccc;border-radius:7px}
-button{background:#1265a1;color:white;border:0;font-weight:bold}
-.item{padding:12px 0;border-bottom:1px solid #ddd}
-small{color:#666}
-</style>
-</head>
-<body>
-<header><h1>TransportOffice</h1><p>Deine Transportverwaltung</p></header>
-<main>
-<section>
-<h2>Fahrer anlegen</h2>
-<input id="fahrer" placeholder="Name des Fahrers">
-<input id="telefon" placeholder="Telefonnummer">
-<button onclick="fahrerSpeichern()">Fahrer speichern</button>
-<div id="fahrerliste"></div>
-</section>
-<section>
-<h2>Fahrzeug anlegen</h2>
-<input id="kennzeichen" placeholder="Kennzeichen">
-<input id="modell" placeholder="Fahrzeugmodell">
-<button onclick="autoSpeichern()">Fahrzeug speichern</button>
-<div id="autoliste"></div>
-</section>
-<section>
-<h2>Beleg erfassen</h2>
-<input type="file" id="foto" accept="image/*">
-<button onclick="lesen()">Beleg automatisch lesen</button>
-<p id="status"></p>
-<input id="haendler" placeholder="Händler">
-<input id="datum" type="date">
-<input id="betrag" type="number" step="0.01" placeholder="Betrag in Euro">
-<button onclick="belegSpeichern()">Beleg speichern</button>
-<div id="belegliste"></div>
-</section>
-<p><small>Nur für Testdaten. Keine sichere Anmeldung oder Buchhaltungsarchivierung.</small></p>
-</main>
+<!doctype html><html lang="de"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>TransportOffice Demo</title><style>
+:root{font-family:system-ui,-apple-system,sans-serif;color:#172334;background:#f3f6fa}*{box-sizing:border-box}body{margin:0}header{background:#123b64;color:white;padding:19px 5%;display:flex;justify-content:space-between;align-items:center}header strong{font-size:23px}header small{opacity:.8}main{max-width:1040px;margin:auto;padding:25px 18px}h1{font-size:25px;margin:0 0 5px}p{color:#576579}.tabs{display:flex;gap:10px;margin:20px 0;flex-wrap:wrap}.tabs button{background:#e2eaf3;color:#15385b}.tabs button.active{background:#145b95;color:white}.grid{display:grid;grid-template-columns:1fr 1fr;gap:18px}.card{background:white;border-radius:14px;padding:20px;box-shadow:0 3px 16px #132d4a0d}h2{font-size:19px;margin:0 0 16px}label{display:block;font-size:13px;font-weight:650;margin:12px 0 5px}input,select{width:100%;padding:12px;border:1px solid #cbd5e1;border-radius:8px;font:inherit;background:white}button{border:0;border-radius:9px;padding:11px 17px;font-weight:650;cursor:pointer}.primary{background:#1268a6;color:white;margin-top:17px}.secondary{background:#edf2f7;color:#1e405d}.danger{color:#ad2932;background:#fff0f0}.item{border-bottom:1px solid #e8edf2;padding:13px 0;display:flex;justify-content:space-between;gap:12px;align-items:center}.item:last-child{border:0}.muted{color:#66788a;font-size:13px;margin-top:4px}.empty{color:#778596;font-size:14px}.badge{display:inline-block;background:#e5f3ea;color:#266b40;border-radius:6px;padding:4px 7px;font-size:12px}.notice{font-size:13px;background:#fff8e5;border:1px solid #f0db9e;border-radius:9px;padding:12px;margin-top:20px}.hidden{display:none}@media(max-width:690px){.grid{grid-template-columns:1fr}header strong{font-size:20px}.card{padding:16px}}</style></head><body>
+<header><strong>🚚 TransportOffice</strong><small>Prototyp · Version 0.2</small></header><main><h1>Fuhrpark & Fahrer</h1><p>Erste bedienbare Testversion für kleine Transportunternehmen.</p><div class="tabs"><button class="active" data-tab="drivers">Fahrer</button><button data-tab="vehicles">Fahrzeuge</button><button data-tab="overview">Übersicht</button><button data-tab="receipts">Belege</button><button data-tab="invoices">Rechnungen</button></div>
+<section id="drivers" class="grid"><div class="card"><h2>Fahrer anlegen</h2><form id="driverForm"><label>Name *</label><input name="name" required maxlength="100" placeholder="Max Mustermann"><label>Telefon</label><input name="phone" type="tel" placeholder="Optional"><label>Führerscheinklasse</label><select name="license"><option>B</option><option>BE</option><option>C1</option><option>C</option><option>CE</option></select><label>Beschäftigungsbeginn</label><input name="start" type="date"><label>Zugewiesenes Fahrzeug</label><select name="vehicle" id="driverVehicle"><option value="">Noch keines</option></select><button class="primary">Fahrer speichern</button></form></div><div class="card"><h2>Fahrerliste <span id="driverCount"></span></h2><div id="driverList"></div></div></section>
+<section id="vehicles" class="grid hidden"><div class="card"><h2>Fahrzeug anlegen</h2><form id="vehicleForm"><label>Kennzeichen *</label><input name="plate" required maxlength="20" placeholder="DO-AB 123"><label>Hersteller / Modell *</label><input name="model" required placeholder="Citroën Nemo"><label>Baujahr</label><input name="year" type="number" min="1950" max="2030" placeholder="2010"><label>TÜV bis</label><input name="inspection" type="month"><label>Versicherung (optional)</label><input name="insurance" placeholder="Versicherer / Notiz"><button class="primary">Fahrzeug speichern</button></form></div><div class="card"><h2>Fahrzeugliste <span id="vehicleCount"></span></h2><div id="vehicleList"></div></div></section>
+<section id="overview" class="hidden"><div class="card"><h2>Zuordnungen</h2><p id="stats"></p><div id="assignments"></div><button class="secondary" id="export">Testdaten als JSON sichern</button></div></section>
+<section id="receipts" class="grid hidden"><div class="card"><h2>Beleg erfassen</h2><form id="receiptForm"><label>Belegfoto (Testbild)</label><input id="receiptImage" type="file" accept="image/*" capture="environment"><div class="muted" id="ocrStatus">Kostenlose Tesseract-Texterkennung startet nach Auswahl eines Fotos (Internet für Bibliothek und Sprachdaten nötig).</div><label>Händler *</label><input name="merchant" required placeholder="Tankstelle"><label>Datum *</label><input name="date" type="date" required><label>Bruttobetrag in Euro *</label><input name="gross" type="number" min="0" step="0.01" required><label>Umsatzsteuerbetrag in Euro</label><input name="tax" type="number" min="0" step="0.01"><label>Fahrzeug</label><select id="receiptVehicle" name="vehicle"><option value="">Nicht zugeordnet</option></select><label>Notiz</label><input name="note" placeholder="Optional"><button class="primary">Beleg speichern</button></form></div><div class="card"><h2>Erfasste Belege <span id="receiptCount"></span></h2><div id="receiptList"></div></div></section>
+<section id="invoices" class="grid hidden"><div class="card"><h2>Rechnung erstellen</h2><form id="invoiceForm"><label>Kunde *</label><input name="customer" required placeholder="Muster Logistik GmbH"><label>Rechnungsnummer *</label><input name="number" required placeholder="2026-001"><label>Rechnungsdatum *</label><input name="date" type="date" required><label>Leistungszeitraum</label><input name="period" placeholder="Oktober 2026"><label>Tourtage *</label><input name="days" type="number" min="0" step="0.5" required><label>Netto-Tagespreis (€) *</label><input name="rate" type="number" min="0" step="0.01" required><label>Zuschläge netto (€)</label><input name="extras" type="number" min="0" step="0.01" value="0"><label>Umsatzsteuer (%)</label><select name="vat"><option value="19">19 % (Beispiel)</option><option value="7">7 %</option><option value="0">0 %</option></select><label>Zahlungsstatus</label><select name="status"><option value="offen">Offen</option><option value="bezahlt">Bezahlt</option></select><button class="primary">Rechnungsentwurf speichern</button></form></div><div class="card"><h2>Rechnungsübersicht</h2><div id="invoiceTotals"></div><div id="invoiceList"></div></div></section><div class="notice">⚠️ OCR wird über eine kostenlose externe JavaScript-Bibliothek geladen; Bildverarbeitung erfolgt im Browser. Dies ist eine lokale Demo ohne Benutzerkonten oder Server. Die erfassten Felder bleiben nur im Browser dieses Geräts gespeichert; Belegbilder werden nicht dauerhaft gespeichert und können beim Löschen von Browserdaten verloren gehen. Bitte ausschließlich erfundene Testdaten verwenden.</div></main>
 <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
 <script>
-const daten=JSON.parse(localStorage.getItem("to-demo")||'{"fahrer":[],"autos":[],"belege":[]}');
-function sichern(){localStorage.setItem("to-demo",JSON.stringify(daten));anzeigen()}
-function element(t){let d=document.createElement("div");d.className="item";d.textContent=t;return d}
-function liste(id,werte,format){
-const ziel=document.getElementById(id);ziel.replaceChildren();
-werte.forEach(w=>ziel.appendChild(element(format(w))));
+const KEY='transportoffice_demo_v1';let state;try{state=JSON.parse(localStorage.getItem(KEY))||{drivers:[],vehicles:[]}}catch{state={drivers:[],vehicles:[]}};const $=id=>document.getElementById(id);state.receipts ||= [];state.invoices ||= [];const save=()=>{localStorage.setItem(KEY,JSON.stringify(state));render()};const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));const vid=id=>state.vehicles.find(v=>v.id===id);const uid=()=>String(Date.now())+Math.random().toString(36).slice(2,8);
+document.querySelectorAll('[data-tab]').forEach(b=>b.onclick=()=>{document.querySelectorAll('[data-tab]').forEach(x=>x.classList.toggle('active',x===b));['drivers','vehicles','overview','receipts','invoices'].forEach(t=>$(t).classList.toggle('hidden',t!==b.dataset.tab))});
+$('driverForm').onsubmit=e=>{e.preventDefault();const d=Object.fromEntries(new FormData(e.target));state.drivers.push({...d,id:uid()});e.target.reset();save()};
+$('vehicleForm').onsubmit=e=>{e.preventDefault();const d=Object.fromEntries(new FormData(e.target));if(state.vehicles.some(v=>v.plate.toLowerCase()===d.plate.trim().toLowerCase()))return alert('Kennzeichen bereits vorhanden');state.vehicles.push({...d,plate:d.plate.trim(),id:uid()});e.target.reset();save()};
+function render(){renderInvoices();let opts='<option value="">Noch keines</option>'+state.vehicles.map(v=>`<option value="${esc(v.id)}">${esc(v.plate)} – ${esc(v.model)}</option>`).join('');$('driverVehicle').innerHTML=opts;$('receiptVehicle').innerHTML=opts.replace('Noch keines','Nicht zugeordnet');
+$('receiptCount').textContent='('+state.receipts.length+')';
+$('receiptList').innerHTML=state.receipts.length?state.receipts.map(r=>`<div class="item"><div><b>${esc(r.merchant)}</b><div class="muted">${esc(r.date)} · ${esc(r.gross)} € · ${esc(vid(r.vehicle)?.plate||'Ohne Fahrzeug')}</div></div><button class="danger" data-remove-receipt="${esc(r.id)}">Löschen</button></div>`).join(''):'<p class="empty">Noch keine Belege erfasst.</p>';
+document.querySelectorAll('[data-remove-receipt]').forEach(b=>b.onclick=()=>{if(confirm('Testbeleg löschen?')){state.receipts=state.receipts.filter(r=>r.id!==b.dataset.removeReceipt);save()}});
+$('driverCount').textContent='('+state.drivers.length+')';$('vehicleCount').textContent='('+state.vehicles.length+')';
+$('driverList').innerHTML=state.drivers.length?state.drivers.map(d=>`<div class="item"><div><b>${esc(d.name)}</b><div class="muted">${esc(d.phone||'Keine Telefonnummer')} · Klasse ${esc(d.license)}</div><div class="muted">Fahrzeug: ${esc(vid(d.vehicle)?.plate||'Nicht zugeordnet')}</div></div><button class="danger" data-remove-driver="${esc(d.id)}">Löschen</button></div>`).join(''):'<p class="empty">Noch keine Fahrer angelegt.</p>';
+$('vehicleList').innerHTML=state.vehicles.length?state.vehicles.map(v=>`<div class="item"><div><b>${esc(v.plate)}</b><div class="muted">${esc(v.model)}${v.year?' · '+esc(v.year):''}</div><div class="muted">TÜV: ${esc(v.inspection||'Nicht erfasst')}</div></div><button class="danger" data-remove-vehicle="${esc(v.id)}">Löschen</button></div>`).join(''):'<p class="empty">Noch keine Fahrzeuge angelegt.</p>';
+$('stats').textContent=`${state.drivers.length} Fahrer · ${state.vehicles.length} Fahrzeuge`;
+$('assignments').innerHTML=state.drivers.map(d=>`<div class="item"><div><b>${esc(d.name)}</b><div class="muted">Fahrzeug zuordnen oder wechseln</div></div><select aria-label="Fahrzeug für ${esc(d.name)}" data-assign="${esc(d.id)}">${opts}</select></div>`).join('')||'<p class="empty">Bitte zuerst Fahrer anlegen.</p>';
+document.querySelectorAll('[data-assign]').forEach(s=>{s.value=state.drivers.find(d=>d.id===s.dataset.assign).vehicle||'';s.onchange=()=>{state.drivers.find(d=>d.id===s.dataset.assign).vehicle=s.value;save()}});
+document.querySelectorAll('[data-remove-driver]').forEach(b=>b.onclick=()=>{if(confirm('Testfahrer löschen?')){state.drivers=state.drivers.filter(d=>d.id!==b.dataset.removeDriver);save()}});
+document.querySelectorAll('[data-remove-vehicle]').forEach(b=>b.onclick=()=>{if(confirm('Testfahrzeug löschen?')){state.vehicles=state.vehicles.filter(v=>v.id!==b.dataset.removeVehicle);state.drivers.forEach(d=>{if(d.vehicle===b.dataset.removeVehicle)d.vehicle=''});save()}})}
+$('receiptForm').onsubmit=e=>{e.preventDefault();const d=Object.fromEntries(new FormData(e.target));if(Number(d.tax||0)>Number(d.gross))return alert('Steuerbetrag darf nicht höher als Bruttobetrag sein');delete d.receiptImage;state.receipts.push({...d,id:uid()});e.target.reset();$('ocrStatus').textContent='Beleg gespeichert. Bilddateien werden in dieser Demo nicht dauerhaft gespeichert.';save()};
+function fillOCR(text){
+ const f=$('receiptForm'), lines=text.split(/\r?\n/).map(x=>x.trim()).filter(Boolean);
+ const date=text.match(/\b(\d{2})[.\/-](\d{2})[.\/-](20\d{2})\b/);
+ if(date){let [,d,m,y]=date;if(+d<=31&&+m<=12)f.elements.date.value=`${y}-${m}-${d}`;}
+ const merchant=lines.find(x=>/[a-zäöüß]{3,}/i.test(x)&&!/^(kasse|beleg|datum|rechnung|steuer|summe|betrag|ust|mwst)/i.test(x));
+ if(merchant)f.elements.merchant.value=merchant.slice(0,100);
+ const money=x=>{const m=x.match(/(\d{1,5}[.,]\d{2})(?!\d)/g);return m?.at(-1)?.replace(',','.')};
+ const total=lines.filter(x=>/(gesamt|summe|total|zu zahlen|endbetrag|brutto|betrag)/i.test(x)).map(money).filter(Boolean);
+ if(total.length)f.elements.gross.value=total.at(-1);
+ const tax=lines.filter(x=>/(mwst|ust|mehrwertsteuer|umsatzsteuer)/i.test(x)).map(money).filter(Boolean);
+ if(tax.length)f.elements.tax.value=tax.at(-1);
+ return [f.elements.merchant.value,f.elements.date.value,f.elements.gross.value].filter(Boolean).length;
 }
-function anzeigen(){
-liste("fahrerliste",daten.fahrer,x=>x.name+" – "+x.tel);
-liste("autoliste",daten.autos,x=>x.k+" – "+x.m);
-liste("belegliste",daten.belege,x=>x.h+" – "+x.b+" €");
+$('receiptImage').onchange=async e=>{
+ const file=e.target.files[0];if(!file)return;
+ const status=$('ocrStatus');
+ if(!window.Tesseract){status.textContent='Kostenlose OCR-Bibliothek nicht geladen. Internetverbindung prüfen oder Werte manuell eingeben.';return;}
+ status.textContent='Kostenlose Texterkennung startet. Das kann einige Sekunden dauern …';
+ try{
+  const result=await Tesseract.recognize(file,'deu+eng',{logger:m=>{if(m.status==='recognizing text')status.textContent=`Beleg wird gelesen: ${Math.round((m.progress||0)*100)} %`;}});
+  const found=fillOCR(result.data.text||'');
+  status.textContent=found?`Texterkennung abgeschlossen (${found} von 3 Hauptfeldern vorgeschlagen). Alle Angaben unbedingt prüfen und korrigieren.`:'Kein sicherer Feldvorschlag möglich. Bitte Daten manuell eintragen.';
+ }catch(err){status.textContent='Texterkennung fehlgeschlagen. Internetverbindung prüfen oder Werte manuell eintragen.';}
+};
+$('export').onclick=()=>{const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify(state,null,2)],{type:'application/json'}));a.download='transportoffice-testdaten.json';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),2000)};render();
+
+const money=n=>Number(n||0).toLocaleString('de-DE',{style:'currency',currency:'EUR'});
+function renderInvoices(){
+ const gross=i=>(Number(i.days)*Number(i.rate)+Number(i.extras||0))*(1+Number(i.vat)/100);
+ const net=i=>Number(i.days)*Number(i.rate)+Number(i.extras||0);
+ const revenue=state.invoices.filter(i=>i.status==='bezahlt').reduce((a,i)=>a+gross(i),0);
+ const expenses=state.receipts.reduce((a,r)=>a+Number(r.gross||0),0);
+ const outstanding=state.invoices.filter(i=>i.status!=='bezahlt').reduce((a,i)=>a+gross(i),0);
+ $('invoiceTotals').innerHTML=`<p><b>Bezahlte Rechnungen (brutto):</b> ${money(revenue)}</p><p><b>Offene Rechnungen (brutto):</b> ${money(outstanding)}</p><p><b>Erfasste Belege (brutto):</b> ${money(expenses)}</p><p class="muted">Dies sind Bruttowerte, keine steuerliche Gewinnermittlung.</p>`;
+ $('invoiceList').innerHTML=state.invoices.map(i=>`<div class="item"><div><b>${esc(i.number)} · ${esc(i.customer)}</b><div class="muted">${esc(i.days)} Tage × ${money(i.rate)} + ${money(i.extras)} Zuschläge</div><div>Netto: ${money(net(i))} · USt: ${money(net(i)*Number(i.vat)/100)}</div><b>Gesamt: ${money(gross(i))}</b><div class="muted">${esc(i.status)} · ${esc(i.period||i.date)}</div><button class="secondary" data-status="${esc(i.id)}">Status wechseln</button> <button class="danger" data-invoice-delete="${esc(i.id)}">Löschen</button></div></div>`).join('')||'<p class="empty">Noch keine Rechnungen.</p>';
+ document.querySelectorAll('[data-status]').forEach(b=>b.onclick=()=>{let i=state.invoices.find(x=>x.id===b.dataset.status);i.status=i.status==='bezahlt'?'offen':'bezahlt';save()});
+ document.querySelectorAll('[data-invoice-delete]').forEach(b=>b.onclick=()=>{if(confirm('Rechnungsentwurf löschen?')){state.invoices=state.invoices.filter(x=>x.id!==b.dataset.invoiceDelete);save()}});
 }
-function fahrerSpeichern(){
-let name=document.getElementById("fahrer").value.trim();
-if(!name)return alert("Name eingeben");
-daten.fahrer.push({name,tel:document.getElementById("telefon").value});
-sichern();
-}
-function autoSpeichern(){
-let k=document.getElementById("kennzeichen").value.trim();
-if(!k)return alert("Kennzeichen eingeben");
-daten.autos.push({k,m:document.getElementById("modell").value});
-sichern();
-}
-async function lesen(){
-const f=document.getElementById("foto").files[0];
-if(!f)return alert("Foto auswählen");
-const status=document.getElementById("status");
-status.textContent="Beleg wird gelesen...";
-try{
-const r=await Tesseract.recognize(f,"deu+eng");
-const zeilen=r.data.text.split("\n").map(x=>x.trim()).filter(Boolean);
-document.getElementById("haendler").value=zeilen[0]||"";
-const datum=r.data.text.match(/\b(\d{2})\.(\d{2})\.(20\d{2})\b/);
-if(datum)document.getElementById("datum").value=datum[3]+"-"+datum[2]+"-"+datum[1];
-const betrag=r.data.text.match(/(?:SUMME|GESAMT|TOTAL|EUR)\s*:?\s*(\d+[,.]\d{2})/i);
-if(betrag)document.getElementById("betrag").value=betrag[1].replace(",",".");
-status.textContent="Erkennung fertig. Bitte Werte kontrollieren.";
-}catch(e){status.textContent="Erkennung fehlgeschlagen. Bitte manuell eintragen."}
-}
-function belegSpeichern(){
-const h=document.getElementById("haendler").value.trim();
-const b=document.getElementById("betrag").value;
-if(!h||!b)return alert("Händler und Betrag eingeben");
-daten.belege.push({h,b,datum:document.getElementById("datum").value});
-sichern();
-}
-anzeigen();
-</script>
-</body>
-</html>
+$('invoiceForm').onsubmit=e=>{e.preventDefault();let i=Object.fromEntries(new FormData(e.target));if(state.invoices.some(x=>x.number===i.number))return alert('Rechnungsnummer existiert bereits');state.invoices.push({...i,id:uid()});e.target.reset();save()};
+</script></body></html>
